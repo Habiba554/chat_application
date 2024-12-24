@@ -17,6 +17,7 @@ class ChatService {
 
   Future<void> sendMessage(String receiverID, message) async {
     final String currentUserId = auth.currentUser!.uid;
+    String? phoneNumber = await getPhoneNumberByUserId(currentUserId);
     final String currentUserEmail = auth.currentUser!.email!;
     final Timestamp timestamp = Timestamp.now();
 
@@ -25,11 +26,11 @@ class ChatService {
         senderEmail: currentUserEmail,
         receiverID: receiverID,
         message: message,
-        timestamp: timestamp);
+        timestamp: timestamp,
+        phoneNumber: receiverID);
 
-    List<String> ids = [currentUserId, receiverID];
-    ids.sort();
-    String chatRoomID = ids.join('_');
+    List<String> ids = [phoneNumber!, receiverID];
+    String chatRoomID = generateKey(ids);
     await firestore
         .collection("ChatRooms")
         .doc(chatRoomID)
@@ -37,21 +38,58 @@ class ChatService {
         .add(newMessage.toMap());
   }
 
-  Stream<QuerySnapshot> getMessages(String userID,  otherUserID) {
+  Stream<QuerySnapshot> getMessages(String userID, otherUserID) {
     List<String> ids = [userID, otherUserID];
-    ids.sort();
-
-    String chatRoomID = ids.join('_');
-   
+    String chatRoomID = generateKey(ids);
     return firestore
-      .collection("ChatRooms")
-      .doc(chatRoomID)
-      .collection("Messages")
-      .orderBy("timestamp", descending: false)
-      .snapshots()
-      .handleError((error) {
-        throw('Error in Firestore Stream: $error');
-      });
+        .collection("ChatRooms")
+        .doc(chatRoomID)
+        .collection("Messages")
+        .orderBy("timestamp", descending: false)
+        .snapshots()
+        .handleError((error) {
+      throw ('Error in Firestore Stream: $error');
+    });
   }
-  
+
+  Future<String?> getPhoneNumberByUserId(String userId) async {
+    try {
+      final DocumentSnapshot userDoc =
+          await firestore.collection('Users').doc(userId).get();
+
+      if (userDoc.exists) {
+        final String phoneNumber = userDoc['number'];
+        return phoneNumber;
+      } else {
+        print('User document does not exist.');
+        return null;
+      }
+    } catch (e) {
+      print('Error retrieving phone number: $e');
+      return null;
+    }
+  }
+
+  String generateKey(List<String> phoneNumbers) {
+    List<String> normalizedNumbers = phoneNumbers.map((number) {
+      return normalizePhoneNumber(number);
+    }).toList();
+
+    normalizedNumbers.sort();
+
+    return normalizedNumbers.join("_");
+  }
+
+  String normalizePhoneNumber(String number) {
+    String cleanedNumber = number.replaceAll(" ", "");
+
+    if (!cleanedNumber.startsWith("+20")) {
+      if (cleanedNumber.startsWith("0")) {
+        cleanedNumber = "+20${cleanedNumber.substring(1)}";
+      } else {
+        cleanedNumber = "+20$cleanedNumber";
+      }
+    }
+    return cleanedNumber;
+  }
 }

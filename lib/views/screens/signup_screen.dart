@@ -13,13 +13,14 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+  final TextEditingController phoneNumber = TextEditingController();
   final GlobalKey<FormState> formkey = GlobalKey();
 
   SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    UserAuthentication userAuthentication=UserAuthentication();
+    UserAuthentication userAuthentication = UserAuthentication();
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
       body: Center(
@@ -32,7 +33,7 @@ class SignupScreen extends StatelessWidget {
                   Text(
                     AppStrings.signup,
                     style: AppStyle.poppins600style35
-                        .copyWith(color:AppColors.whiteColor),
+                        .copyWith(color: AppColors.whiteColor),
                   ),
                   const SizedBox(
                     height: 100,
@@ -47,6 +48,22 @@ class SignupScreen extends StatelessWidget {
                         return 'Please Enter your Email';
                       } else if (!value.endsWith('@gmail.com')) {
                         return 'Email format should be (Ex. user@gmail.com)';
+                      }
+                      return null;
+                    },
+                  ),
+                  CustomFormTextField(
+                    prefix: Icons.phone,
+                    controller: phoneNumber,
+                    hint: AppStrings.phoneNumber,
+                    startNumber: '+20 ',
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Phone number is required.';
+                      }
+                      if (!RegExp(r'^[1][0-9]{9}$').hasMatch(value)) {
+                        return 'Enter a valid 10-digit Egyptian phone number (e.g., 10XXXXXXXX).';
                       }
                       return null;
                     },
@@ -88,12 +105,13 @@ class SignupScreen extends StatelessWidget {
                     text: AppStrings.signup,
                     onPressed: () async {
                       if (formkey.currentState!.validate()) {
-                        userAuthentication.registerUser(context, emailController.text, passwordController.text);
+                        userAuthentication.registerUser(context,
+                            emailController.text, passwordController.text,phoneNumber.text);
                       } else {
-                         showSnackBars(msg: 'There was an error',context);
+                        showSnackBars(msg: 'There was an error', context);
                       }
                     },
-                    backgroundColor:AppColors.whiteColor,
+                    backgroundColor: AppColors.whiteColor,
                     textColor: AppColors.primaryColor,
                   ),
                   const HaveAnAccount()

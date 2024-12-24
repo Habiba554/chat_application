@@ -17,4 +17,5 @@ class AppStrings {
   static const accountExistsForEmail = "account_exists_for_email";
   static const wrongEmailOrPassword = "wrong_email_or_password";
   static const location="Location";
+  static const phoneNumber="Enter your phone number";
 }

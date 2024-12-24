@@ -27,10 +27,7 @@ class Permissions {
   }
 
   void chooseContact(BuildContext context, String receiverID) async {
-    final permission = await Permission.contacts.request();
-    if (!permission.isGranted) return;
-
-    List<Contact> contacts = await FlutterContacts.getContacts(withProperties: true);
+    List<Contact> contacts = await getAllContects();
     if (contacts.isNotEmpty) {
       print(contacts);
       showModalBottomSheet(
@@ -47,9 +44,18 @@ class Permissions {
     }
   }
 
+  Future<List<Contact>> getAllContects() async {
+    final permission = await Permission.contacts.request();
+    if (!permission.isGranted) return [];
+    List<Contact> contacts = await FlutterContacts.getContacts(withProperties: true);
+    return contacts;
+  }
+
   void sendContact(Contact contact, String receiverID) async {
     String contactInfo =
         "Name: ${contact.displayName}, Phone: ${contact.phones.isNotEmpty ? contact.phones.first.number : 'No phone number'}";
     await chatService.sendMessage(receiverID, contactInfo);
   }
+
+  
 }

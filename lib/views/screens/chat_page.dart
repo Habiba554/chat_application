@@ -11,6 +11,9 @@ import 'package:chat_app/views/widgets/google_maps.dart';
 import 'package:chat_app/views/widgets/google_maps_for_receivers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../constants/provider/user_provider.dart';
 
 class ChatPage extends StatelessWidget {
   ChatPage({
@@ -47,7 +50,9 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String userId = userAuthentication.auth.currentUser!.uid;
+    String phoneNumber = Provider.of<UserProvider>(context,listen: false).phoneNumber;
+    print(phoneNumber);
+    print(receiverID);
     return Scaffold(
         backgroundColor: AppColors.primaryColor,
         appBar: chatPageAppbar(context),
@@ -55,7 +60,7 @@ class ChatPage extends StatelessWidget {
           children: [
             Expanded(
                 child: StreamBuilder(
-                    stream: chatService.getMessages(receiverID, userId),
+                    stream: chatService.getMessages(receiverID, phoneNumber),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(

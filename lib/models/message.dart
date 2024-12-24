@@ -7,8 +7,9 @@ class Message {
   final String receiverID;
   final String message;
   final Timestamp timestamp;
+  final String phoneNumber;
 
-  Message({required this.senderID,required this.senderEmail,required this.receiverID,required this.message,required this.timestamp});
+  Message({required this.phoneNumber,required this.senderID,required this.senderEmail,required this.receiverID,required this.message,required this.timestamp});
 
   Map<String,dynamic> toMap(){
     return {
@@ -16,6 +17,7 @@ class Message {
       "senderEmail":senderEmail,
       "receiverID":receiverID,
       "message":message,
+      "phoneNumber":phoneNumber,
       "timestamp":timestamp
     };
   }

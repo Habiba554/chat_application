@@ -12,8 +12,9 @@ class CustomFormTextField  extends StatefulWidget {
   final IconData? prefix;
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
-  CustomFormTextField({super.key, required this.hint,this.suffix,this.prefix,this.isObscureText = false, this.validator, required this.keyboardType, required this.controller});
+  CustomFormTextField({super.key, required this.hint,this.suffix,this.prefix,this.isObscureText = false, this.validator, required this.keyboardType, required this.controller, this.startNumber});
   late bool isObscureText;
+  final String? startNumber;
 
 
   @override
@@ -35,6 +36,8 @@ class _CustomFormTextFieldState extends State<CustomFormTextField> {
         style: AppStyle.poppins400style14.copyWith(color: AppColors.whiteColor),
         cursorColor: AppColors.whiteColor,
         decoration: InputDecoration(
+          prefixText: widget.startNumber??"",
+          prefixStyle:AppStyle.poppins400style14.copyWith(color: AppColors.whiteColor) ,
           hintText: widget.hint ,
           hintStyle:  const TextStyle(color:AppColors.whiteColor ),
           enabledBorder: OutlineInputBorder(
