@@ -81,7 +81,7 @@ class ChatService {
   }
 
   String normalizePhoneNumber(String number) {
-    String cleanedNumber = number.replaceAll(" ", "").replaceAll("-", "");
+    String cleanedNumber = number.replaceAll("-", "").replaceAll(" ", "");
 
     if (!cleanedNumber.startsWith("+20")) {
       if (cleanedNumber.startsWith("0")) {
