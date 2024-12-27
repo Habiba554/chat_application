@@ -23,12 +23,22 @@ class UserAuthentication {
         email: emailAddress,
         password: password,
       );
+      if (userCredential.user != null && userCredential.user!.emailVerified) {
+        showSnackBars(msg: AppStrings.loginSuccess, context);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.homeRoute,
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        showSnackBars(msg: 'Please verify your email', context);
+        await FirebaseAuth.instance.signOut();
+      }
+
       String? phoneNumber =
           await chatService.getPhoneNumberByUserId(userCredential.user!.uid);
       Provider.of<UserProvider>(context, listen: false)
           .setPhoneNumber(phoneNumber!);
-      showSnackBars(msg: AppStrings.loginSuccess, context);
-      Navigator.pushNamed(context, Routes.homeRoute);
     } on FirebaseAuthException catch (e) {
       if (e.code == "invalid-credential") {
         showSnackBars(msg: AppStrings.wrongEmailOrPassword, context);
@@ -45,9 +55,14 @@ class UserAuthentication {
         email: emailAddress,
         password: password,
       );
-      await userCredential.user?.sendEmailVerification();
-      Navigator.pop(context);
 
+      if (userCredential.user != null && !userCredential.user!.emailVerified) {
+        await userCredential.user!.sendEmailVerification();
+        showSnackBars(
+            msg: "Signup successful! Please verify your email address.",
+            context);
+      }
+      Navigator.pop(context);
       await firestore.collection("Users").doc(userCredential.user!.uid).set({
         'uid': userCredential.user!.uid,
         'email': emailAddress,
@@ -55,8 +70,6 @@ class UserAuthentication {
       });
       Provider.of<UserProvider>(context, listen: false)
           .setPhoneNumber("0$phoneNumber");
-      showSnackBars(
-          msg: "Signup successful! Please verify your email address.", context);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showSnackBars(msg: AppStrings.weakPassword, context);
