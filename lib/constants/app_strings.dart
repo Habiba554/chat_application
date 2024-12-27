@@ -13,9 +13,9 @@ class AppStrings {
   static const profile = "Profile";
   static const sendLocation='Send Location';
   static const sendContact='Send Contact';
-  static const weakPassword = "weak_password";
-  static const accountExistsForEmail = "account_exists_for_email";
-  static const wrongEmailOrPassword = "wrong_email_or_password";
+  static const weakPassword = "weak password";
+  static const accountExistsForEmail = "account exists for_email";
+  static const wrongEmailOrPassword = "wrong email or password";
   static const location="Location";
   static const phoneNumber="Enter your phone number";
 }
